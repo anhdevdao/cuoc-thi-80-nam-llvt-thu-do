@@ -84,21 +84,26 @@ export async function GET(request: Request) {
     );
   });
 
-  const rows = sortedRows.slice(0, 20).map((row, index) => ({
-    rank: index + 1,
-    id: row.id,
-    full_name: row.full_name,
-    cccd: row.cccd,
-    topic_id: row.topic_id,
-    topic_title: Array.isArray(row.topics)
-      ? row.topics[0]?.title ?? ""
-      : row.topics?.title ?? "",
-    score: row.score,
-    prediction_count: row.prediction_count ?? 0,
-    deviation: (row.prediction_count ?? 0) - currentTopicTotal,
-    duration: row.duration ?? 0,
-    created_at: row.created_at,
-  }));
+  const rows = sortedRows.slice(0, 20).map((row, index) => {
+    const topicSource = row.topics as { title?: string }[] | { title?: string } | null;
+    const topicTitle = Array.isArray(topicSource)
+      ? topicSource[0]?.title ?? ""
+      : topicSource?.title ?? "";
+
+    return {
+      rank: index + 1,
+      id: row.id,
+      full_name: row.full_name,
+      cccd: row.cccd,
+      topic_id: row.topic_id,
+      topic_title: topicTitle,
+      score: row.score,
+      prediction_count: row.prediction_count ?? 0,
+      deviation: (row.prediction_count ?? 0) - currentTopicTotal,
+      duration: row.duration ?? 0,
+      created_at: row.created_at,
+    };
+  });
 
   const selectedTopicTitle =
     topicList.find((topic) => topic.id === selectedTopicId)?.title ?? "";

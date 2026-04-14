@@ -34,7 +34,13 @@ export async function GET(request: Request) {
     );
   }
 
-  const rows = (data ?? []).map((row) => ({
+  const rows = (data ?? []).map((row) => {
+    const topicSource = row.topics as { title?: string }[] | { title?: string } | null;
+    const topicTitle = Array.isArray(topicSource)
+      ? topicSource[0]?.title ?? ""
+      : topicSource?.title ?? "";
+
+    return {
     id: row.id,
     cccd: row.cccd,
     full_name: row.full_name,
@@ -42,14 +48,13 @@ export async function GET(request: Request) {
     location: row.location,
     unit: row.unit,
     specialty: row.specialty,
-    topic_title: Array.isArray(row.topics)
-      ? row.topics[0]?.title ?? ""
-      : row.topics?.title ?? "",
+    topic_title: topicTitle,
     score: row.score,
     total_questions: row.total_questions,
     prediction_count: row.prediction_count,
     created_at: row.created_at,
-  }));
+    };
+  });
 
   return Response.json({
     success: true,

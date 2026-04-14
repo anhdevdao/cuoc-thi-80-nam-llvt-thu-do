@@ -1,16 +1,20 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function PredictionPage() {
-  const searchParams = useSearchParams();
-  const submissionId = searchParams.get("submissionId") ?? "-";
-  const score = Number.parseInt(searchParams.get("score") ?? "0", 10);
-  const totalQuestions = Number.parseInt(
-    searchParams.get("totalQuestions") ?? "0",
-    10,
-  );
-  const autoSubmitted = searchParams.get("autoSubmitted") === "1";
+  const [submissionId, setSubmissionId] = useState("-");
+  const [score, setScore] = useState(0);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [autoSubmitted, setAutoSubmitted] = useState(false);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setSubmissionId(searchParams.get("submissionId") ?? "-");
+    setScore(Number.parseInt(searchParams.get("score") ?? "0", 10));
+    setTotalQuestions(Number.parseInt(searchParams.get("totalQuestions") ?? "0", 10));
+    setAutoSubmitted(searchParams.get("autoSubmitted") === "1");
+  }, []);
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl px-6 py-10">
